@@ -1,37 +1,43 @@
 #include "advanced/geoip.h"
 #include "core/utils.h"
-#include <fstream>
 #include <iostream>
-#include <algorithm>
+#include <fstream>
+#include <map>
 
 namespace lemonade {
-namespace GeoIP {
+    std::map<uint32_t, std::pair<uint32_t, std::string>> geo_db;
 
-// Helper to trim whitespace/newlines
-std::string trim(const std::string& s) {
-    size_t first = s.find_first_not_of(" \r\n\t");
-    if (std::string::npos == first) return s;
-    size_t last = s.find_last_not_of(" \r\n\t");
-    return s.substr(first, (last - first + 1));
-}
+    void load_geo() {
+        std::ifstream f("data/geoip.csv");
+        std::string line;
+        while(std::getline(f, line)) {
+            size_t pos1 = line.find(',');
+            if(pos1 == std::string::npos) continue;
+            size_t pos2 = line.find(',', pos1 + 1);
+            if(pos2 == std::string::npos) continue;
+            
+            uint32_t start = ip_to_int(line.substr(0, pos1));
+            uint32_t end = ip_to_int(line.substr(pos1 + 1, pos2 - pos1 - 1));
+            std::string country = line.substr(pos2 + 1);
+            geo_db[start] = std::make_pair(end, country);
+        }
+    }
 
-void load_geo() {
-    std::ifstream f("data/geoip.csv");
-    if (!f.is_open()) return;
-
-    std::string line;
-    while (std::getline(f, line)) {
-        size_t pos1 = line.find(',');
-        if (pos1 == std::string::npos) continue;
-
-        size_t pos2 = line.find(',', pos1 + 1);
-        if (pos2 == std::string::npos) continue;
-
-        uint32_t start = ip_to_int(trim(line.substr(0, pos1)));
-        uint32_t end = ip_to_int(trim(line.substr(pos1 + 1, pos2 - pos1 - 1)));
-        std::string country = trim(line.substr(pos2 + 1));
-
-        geo_db[start] = std::make_pair(end, country); // [cite: 61]
+    void GeoIP::map(const std::vector<std::string>& args) {
+        if(args.size() < 1) {
+            std::cerr << "Usage: -geoip <ip>\n";
+            return;
+        }
+        if(geo_db.empty()) load_geo();
+        
+        uint32_t ip_int = ip_to_int(args[0]);
+        auto it = geo_db.upper_bound(ip_int);
+        if(it != geo_db.begin()) --it;
+        
+        if(it != geo_db.end() && ip_int >= it->first && ip_int <= it->second.first) {
+            std::cout << "Country: " << it->second.second << "\n";
+        } else {
+            std::cout << "Unknown location\n";
+        }
     }
 }
-}}
