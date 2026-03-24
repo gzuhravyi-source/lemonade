@@ -3,27 +3,15 @@
 
 #include <string>
 #include <vector>
-#include <unistd.h> 
+#include <cstdint>
 
 namespace lemonade {
 class RawSocket {
 public:
-    RawSocket(const std::string& iface) : fd(-1), interface(iface) {}
-    
-    
-    ~RawSocket() { close(); }
-
-    RawSocket(const RawSocket&) = delete;
-    RawSocket& operator=(const RawSocket&) = delete;
-
+    RawSocket(const std::string& iface);
+    ~RawSocket();
     bool open();
-    void close() {
-        if (fd != -1) {
-            ::close(fd);
-            fd = -1;
-        }
-    }
-
+    void close();
     bool send(const std::vector<uint8_t>& data);
     std::vector<uint8_t> receive(int timeout_ms = 1000);
     uint8_t* get_mac();
