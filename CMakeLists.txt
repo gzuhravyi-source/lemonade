@@ -6,10 +6,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
     add_definitions(-DOS_LINUX)
-    set(PLATFORM_LIBS pthread pcap) # Added pcap for networking [cite: 289]
+    set(PLATFORM_LIBS pthread)
 elseif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
     add_definitions(-DOS_MACOS)
-    set(PLATFORM_LIBS pthread pcap) # Added pcap for macOS [cite: 289]
+    set(PLATFORM_LIBS pthread)
 elseif(CMAKE_SYSTEM_NAME MATCHES "Windows")
     add_definitions(-DOS_WINDOWS)
     set(PLATFORM_LIBS ws2_32 iphlpapi)
